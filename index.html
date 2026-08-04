@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌲 기후변화로부터 우리 숲을 지키자! | 어린이 숲 탐구대</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Jua, Nanum Gothic) -->
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        forest: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            300: '#86efac',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                        },
+                        amberWood: '#d97706',
+                        fireRed: '#ef4444',
+                        skyBlue: '#0284c7'
+                    },
+                    fontFamily: {
+                        jua: ['Jua', 'sans-serif'],
+                        nanum: ['Nanum Gothic', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Nanum Gothic', sans-serif;
+            background-color: #f0fdf4;
+            user-select: none;
+        }
+        .font-jua {
+            font-family: 'Jua', sans-serif;
+        }
+        /* Custom Button Animations */
+        .btn-bounce {
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .btn-bounce:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+        }
+        .btn-bounce:active {
+            transform: translateY(1px) scale(0.98);
+        }
+        /* Fire pulse animation */
+        @keyframes fireGlow {
+            0%, 100% { filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.8)); transform: scale(1); }
+            50% { filter: drop-shadow(0 0 14px rgba(245, 158, 11, 0.9)); transform: scale(1.05); }
+        }
+        .fire-anim {
+            animation: fireGlow 1.5s infinite ease-in-out;
+        }
+        /* Glassmorphic card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            border: 2px solid #bbf7d0;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col text-gray-800 pb-12">
+
+    <!-- Navigation Header -->
+    <header class="bg-forest-600 text-white shadow-md sticky top-0 z-40">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
+                <div class="bg-white p-2 rounded-full text-2xl shadow">
+                    🐿️
+                </div>
+                <div>
+                    <h1 class="font-jua text-2xl sm:text-3xl text-yellow-300 tracking-wide leading-none">우리 숲 지킴이</h1>
+                    <p class="text-xs text-forest-100 font-bold hidden sm:block">기후변화와 산불 탐구 대작전</p>
+                </div>
+            </div>
+
+            <!-- Login Status & User Info -->
+            <div class="flex items-center space-x-2">
+                <div id="userBadge" class="hidden bg-forest-800 text-yellow-200 px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold flex items-center shadow">
+                    <i class="fa-solid fa-user-astronaut mr-1.5 text-yellow-300"></i>
+                    <span id="userNameDisplay">학생</span>
+                </div>
+                <button id="loginBtn" onclick="openLoginModal()" class="bg-yellow-400 hover:bg-yellow-300 text-forest-800 font-jua px-3 py-1.5 rounded-full text-sm font-bold shadow btn-bounce flex items-center">
+                    <i class="fa-solid fa-right-to-bracket mr-1"></i> 로그인
+                </button>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="bg-forest-700 border-t border-forest-500">
+            <div class="max-w-5xl mx-auto flex justify-around text-center text-xs sm:text-base font-jua">
+                <button onclick="switchTab('home')" id="tab-home" class="tab-btn active-tab flex-1 py-2.5 text-yellow-300 border-b-4 border-yellow-300">
+                    <i class="fa-solid fa-compass mr-1"></i> 탐구 지도
+                </button>
+                <button onclick="switchTab('sensor')" id="tab-sensor" class="tab-btn flex-1 py-2.5 text-white hover:text-yellow-200">
+                    <i class="fa-solid fa-microchip mr-1"></i> 마이크로비트 센서
+                </button>
+                <button onclick="switchTab('game')" id="tab-game" class="tab-btn flex-1 py-2.5 text-white hover:text-yellow-200">
+                    <i class="fa-solid fa-gamepad mr-1"></i> 숲 지킴이 게임
+                </button>
+                <button onclick="switchTab('quiz')" id="tab-quiz" class="tab-btn flex-1 py-2.5 text-white hover:text-yellow-200">
+                    <i class="fa-solid fa-graduation-cap mr-1"></i> 융합 퀴즈
+                </button>
+                <button onclick="switchTab('report')" id="tab-report" class="tab-btn flex-1 py-2.5 text-white hover:text-yellow-200">
+                    <i class="fa-solid fa-file-invoice mr-1"></i> 탐구 결과
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-5xl mx-auto px-4 mt-6 flex-grow w-full">
+
+        <!-- 1. HOME TAB: 첫 화면 (귀여운 캐릭터 & 중앙 대형 아이디 입력 버튼) -->
+        <section id="sec-home" class="tab-content block space-y-8 py-2">
+            <!-- Main Cute Hero Card -->
+            <div class="bg-gradient-to-b from-emerald-400 via-teal-500 to-forest-700 rounded-3xl p-8 sm:p-12 text-white shadow-2xl relative overflow-hidden text-center border-4 border-emerald-300">
+                <!-- Background Floating Decorative Elements -->
+                <div class="absolute -top-6 -left-6 text-7xl opacity-30 animate-pulse">🌲</div>
+                <div class="absolute top-10 right-4 text-6xl opacity-30 animate-bounce">☁️</div>
+                <div class="absolute bottom-4 left-6 text-6xl opacity-30 animate-bounce">🌸</div>
+                <div class="absolute -bottom-6 -right-6 text-8xl opacity-30">🌳</div>
+
+                <!-- Cute Central Mascot Illustration & Main Content -->
+                <div class="relative z-10 max-w-2xl mx-auto flex flex-col items-center">
+                    <span class="bg-yellow-300 text-forest-900 font-jua text-sm sm:text-base px-4 py-1.5 rounded-full font-bold shadow-md transform -rotate-1 mb-3 inline-block">
+                        🌱 초등 융합 숲 지킴이 탐구대
+                    </span>
+
+                    <!-- Cute Forest Mascot Box -->
+                    <div class="relative my-3 p-5 sm:p-6 bg-white/20 backdrop-blur-md rounded-3xl border-2 border-white/40 shadow-inner flex items-center justify-center space-x-3 sm:space-x-6">
+                        <div class="text-6xl sm:text-7xl transform hover:scale-110 transition duration-300 animate-bounce">🐿️</div>
+                        <div class="text-7xl sm:text-8xl transform hover:scale-110 transition duration-300">🌲</div>
+                        <div class="text-6xl sm:text-7xl transform hover:scale-110 transition duration-300 animate-pulse">🐻</div>
+                        <div class="text-5xl sm:text-6xl">🔥</div>
+                        <div class="text-6xl sm:text-7xl animate-bounce">💧</div>
+                    </div>
+
+                    <h2 class="font-jua text-3xl sm:text-5xl text-yellow-200 tracking-wide drop-shadow-md leading-tight mt-1">
+                        기후변화로부터<br>우리 숲을 함께 지켜요!
+                    </h2>
+                    <p class="mt-3 text-base sm:text-lg text-emerald-100 font-bold max-w-lg leading-relaxed">
+                        안녕! 나는 숲 수호대장 람쥐야! 🐿️<br>
+                        지구 온도가 높아지고 건조해져 불씨가 생기고 있어.<br>
+                        나와 함께 센서도 작동시키고 재미있는 게임과 퀴즈도 풀어볼래?
+                    </p>
+
+                    <!-- Big Prominent Center Student ID / Login Button -->
+                    <div class="mt-6 sm:mt-8 w-full max-w-md">
+                        <button onclick="openLoginModal()" class="w-full bg-yellow-400 hover:bg-yellow-300 text-forest-900 font-jua text-xl sm:text-2xl px-8 py-5 rounded-3xl shadow-2xl border-4 border-yellow-200 btn-bounce flex items-center justify-center space-x-3 transform hover:scale-105 transition duration-200">
+                            <span class="text-3xl animate-pulse">🔑</span>
+                            <span>내 아이디 입력하고 시작하기!</span>
+                            <span class="text-3xl">🚀</span>
+                        </button>
+                        <p id="welcomeUserSubtext" class="text-xs sm:text-sm text-yellow-100 font-bold mt-3">
+                            * 아이디를 입력하면 탐구 결과와 퀴즈 점수가 저장돼요!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Access Interactive Feature Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Sensor Card -->
+                <div onclick="switchTab('sensor')" class="bg-white p-6 rounded-3xl border-3 border-orange-200 shadow-lg hover:shadow-xl transition cursor-pointer btn-bounce flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center text-4xl mb-3 text-orange-500">
+                        🌡️
+                    </div>
+                    <span class="bg-orange-500 text-white font-jua text-xs px-3 py-1 rounded-full mb-1">실과 · 과학</span>
+                    <h3 class="font-jua text-2xl text-gray-800">마이크로비트 센서</h3>
+                    <p class="text-xs text-gray-500 mt-2">온도와 습도를 조절하며 산불 위험 경보 장치를 직접 동작시켜 보세요!</p>
+                </div>
+
+                <!-- Game Card -->
+                <div onclick="switchTab('game')" class="bg-white p-6 rounded-3xl border-3 border-emerald-200 shadow-lg hover:shadow-xl transition cursor-pointer btn-bounce flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center text-4xl mb-3 text-emerald-600">
+                        🎮
+                    </div>
+                    <span class="bg-forest-600 text-white font-jua text-xs px-3 py-1 rounded-full mb-1">액션 미니게임</span>
+                    <h3 class="font-jua text-2xl text-gray-800">불씨 끄기 게임</h3>
+                    <p class="text-xs text-gray-500 mt-2">화면에 떨어진 불씨를 터치해 끄고 새 나무를 심어 숲을 보존해 보세요!</p>
+                </div>
+
+                <!-- Quiz Card -->
+                <div onclick="switchTab('quiz')" class="bg-white p-6 rounded-3xl border-3 border-purple-200 shadow-lg hover:shadow-xl transition cursor-pointer btn-bounce flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center text-4xl mb-3 text-purple-600">
+                        🧩
+                    </div>
+                    <span class="bg-purple-500 text-white font-jua text-xs px-3 py-1 rounded-full mb-1">골든벨 탐구</span>
+                    <h3 class="font-jua text-2xl text-gray-800">융합 퀴즈 도전</h3>
+                    <p class="text-xs text-gray-500 mt-2">사회·과학·수학·실과 개념 퀴즈를 풀고 수호대 리포트를 완성하세요!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. SENSOR TAB: 마이크로비트 온·습도 센서 시뮬레이션 -->
+        <section id="sec-sensor" class="tab-content hidden space-y-6">
+            <div class="glass-card rounded-3xl p-6 shadow-lg border border-forest-200">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                    <div>
+                        <span class="bg-red-100 text-red-700 font-jua px-3 py-1 rounded-full text-xs font-bold">실과 [6실05-03] / 과학 [6과07-02]</span>
+                        <h3 class="font-jua text-3xl text-forest-800 mt-1">🌡️ 마이크로비트 산불 감지 센서 체험</h3>
+                        <p class="text-sm text-gray-600">온도와 습도 슬라이더를 조절하여 마이크로비트 화면과 경보 시스템의 변화를 확인해보세요!</p>
+                    </div>
+                    <div class="bg-forest-100 p-3 rounded-2xl text-center border border-forest-300">
+                        <p class="text-xs font-bold text-forest-800">현재 산불 위험 지수</p>
+                        <p id="fireRiskDegree" class="font-jua text-2xl text-emerald-600">안전 😊</p>
+                    </div>
+                </div>
+
+                <!-- Simulation Interactive Workspace -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 bg-emerald-50/70 p-5 rounded-2xl border border-emerald-200">
+                    <!-- Controls -->
+                    <div class="lg:col-span-6 space-y-6 flex flex-col justify-center">
+                        <!-- Temperature Slider -->
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-orange-200">
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="font-jua text-lg text-orange-600 flex items-center">
+                                    <i class="fa-solid fa-temperature-high mr-2"></i> 대기 온도 (℃)
+                                </label>
+                                <span id="tempValue" class="font-jua text-2xl text-orange-600">22℃</span>
+                            </div>
+                            <input type="range" id="tempInput" min="5" max="45" value="22" class="w-full h-3 bg-orange-100 rounded-lg appearance-none cursor-pointer accent-orange-500" oninput="updateSensorSim()">
+                            <div class="flex justify-between text-xs text-gray-400 mt-1 font-bold">
+                                <span>5℃ (서늘함)</span>
+                                <span>25℃ (보통)</span>
+                                <span>45℃ (폭염🔥)</span>
+                            </div>
+                        </div>
+
+                        <!-- Humidity Slider -->
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-blue-200">
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="font-jua text-lg text-skyBlue flex items-center">
+                                    <i class="fa-solid fa-droplet mr-2"></i> 상대 습도 (%)
+                                </label>
+                                <span id="humidityValue" class="font-jua text-2xl text-skyBlue">60%</span>
+                            </div>
+                            <input type="range" id="humidityInput" min="10" max="90" value="60" class="w-full h-3 bg-blue-100 rounded-lg appearance-none cursor-pointer accent-skyBlue" oninput="updateSensorSim()">
+                            <div class="flex justify-between text-xs text-gray-400 mt-1 font-bold">
+                                <span>10% (매우 건조🌵)</span>
+                                <span>50% (보통)</span>
+                                <span>90% (습함🌧️)</span>
+                            </div>
+                        </div>
+
+                        <!-- Logic Explanation Box -->
+                        <div class="bg-yellow-50 p-4 rounded-2xl border border-yellow-200 text-xs text-yellow-900 leading-relaxed">
+                            <p class="font-bold text-sm text-yellow-800 mb-1">💡 산불 위험 조건 (기후변화의 영향)</p>
+                            온도가 <strong class="text-red-600">30℃ 이상</strong>이고 습도가 <strong class="text-blue-600">30% 이하</strong>로 낮아지면 나무와 풀이 바짝 말라 조그만 불씨도 거대한 대형 산불로 확산됩니다!
+                        </div>
+                    </div>
+
+                    <!-- Virtual Micro:bit Display -->
+                    <div class="lg:col-span-6 flex flex-col items-center justify-center">
+                        <div class="bg-gray-900 border-4 border-yellow-400 p-6 rounded-3xl shadow-2xl w-full max-w-xs text-center relative overflow-hidden">
+                            <div class="text-white font-jua text-sm mb-3 flex items-center justify-between border-b border-gray-700 pb-2">
+                                <span>BBC micro:bit</span>
+                                <span id="mbStatusBadge" class="text-xs bg-green-500 px-2 py-0.5 rounded-full text-white">정상 감시 중</span>
+                            </div>
+
+                            <!-- 5x5 LED Grid Representation -->
+                            <div id="ledGrid" class="grid grid-cols-5 gap-2 my-4 justify-items-center">
+                                <!-- Generated by JS -->
+                            </div>
+
+                            <div class="bg-gray-800 p-3 rounded-xl border border-gray-700 mt-3">
+                                <p class="text-xs text-gray-400 font-bold mb-1">센서 경보 음성/메시지</p>
+                                <p id="microbitMsg" class="font-jua text-yellow-300 text-lg">"숲이 쾌적해요 😊"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. GAME TAB: 숲 지킴이 미니 게임 -->
+        <section id="sec-game" class="tab-content hidden space-y-6">
+            <div class="glass-card rounded-3xl p-6 shadow-lg border border-forest-200">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
+                    <div>
+                        <span class="bg-green-100 text-green-700 font-jua px-3 py-1 rounded-full text-xs font-bold">체험형 인터랙티브 미니게임</span>
+                        <h3 class="font-jua text-3xl text-forest-800 mt-1">🔥 불씨를 끄고 숲을 지켜라!</h3>
+                        <p class="text-sm text-gray-600">기후변화로 떨어진 불씨를 클릭/터치해서 끄고 나무를 심어 숲을 지켜주세요!</p>
+                    </div>
+                    <!-- Game Score Board -->
+                    <div class="flex items-center space-x-3 bg-yellow-100 px-4 py-2 rounded-2xl border border-yellow-300 shadow-sm">
+                        <div class="text-center">
+                            <p class="text-xs text-gray-500 font-bold">시간</p>
+                            <p id="gameTimer" class="font-jua text-2xl text-red-600">30초</p>
+                        </div>
+                        <div class="h-8 w-px bg-yellow-300"></div>
+                        <div class="text-center">
+                            <p class="text-xs text-gray-500 font-bold">내 점수</p>
+                            <p id="gameScore" class="font-jua text-2xl text-forest-700">0점</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Canvas Area -->
+                <div id="gameContainer" class="relative w-full h-80 sm:h-96 bg-gradient-to-b from-sky-200 via-emerald-100 to-emerald-300 rounded-3xl overflow-hidden border-4 border-forest-500 shadow-inner flex flex-col items-center justify-center">
+                    
+                    <!-- Overlay Start Screen -->
+                    <div id="gameStartOverlay" class="absolute inset-0 bg-forest-900/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center text-white p-6 text-center">
+                        <div class="text-6xl mb-2 animate-bounce">🐿️🔥</div>
+                        <h4 class="font-jua text-3xl text-yellow-300">숲 수호대 긴급 출동!</h4>
+                        <p class="text-sm text-gray-200 max-w-md mt-2">
+                            건조한 기후변화 때문에 숲곳곳에 불씨가 떨어지고 있어요! <br>
+                            불씨🔥를 클릭해 끄고, 나무🌱가 자라나도록 도와주세요!
+                        </p>
+                        <button onclick="startGame()" class="mt-6 bg-yellow-400 hover:bg-yellow-300 text-forest-900 font-jua px-8 py-3 rounded-2xl text-xl font-bold shadow-lg btn-bounce">
+                            🎮 게임 시작하기
+                        </button>
+                    </div>
+
+                    <!-- Overlay Game Over Screen -->
+                    <div id="gameOverOverlay" class="hidden absolute inset-0 bg-forest-900/90 backdrop-blur-sm z-20 flex flex-col items-center justify-center text-white p-6 text-center">
+                        <div class="text-6xl mb-2">🏆</div>
+                        <h4 class="font-jua text-3xl text-yellow-300">미션 완료!</h4>
+                        <p class="text-lg text-white mt-1">획득 점수: <span id="finalGameScore" class="font-jua text-3xl text-yellow-400">0</span>점</p>
+                        <p id="gameEvalText" class="text-sm text-emerald-200 mt-2">당신은 자랑스러운 숲의 수호자입니다!</p>
+                        <div class="mt-6 flex space-x-3">
+                            <button onclick="startGame()" class="bg-yellow-400 hover:bg-yellow-300 text-forest-900 font-jua px-6 py-2.5 rounded-2xl text-base font-bold shadow btn-bounce">
+                                🔄 다시 도전하기
+                            </button>
+                            <button onclick="switchTab('quiz')" class="bg-emerald-500 hover:bg-emerald-400 text-white font-jua px-6 py-2.5 rounded-2xl text-base font-bold shadow btn-bounce">
+                                🧩 퀴즈 풀러 가기
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Game Play Area -->
+                    <div id="gamePlayArea" class="relative w-full h-full cursor-crosshair">
+                        <!-- Forest Trees Background Visual -->
+                        <div class="absolute bottom-0 inset-x-0 h-24 bg-forest-600 rounded-t-3xl flex justify-around items-end px-4 pb-2 opacity-90">
+                            <span class="text-4xl">🌲</span>
+                            <span class="text-5xl">🌳</span>
+                            <span class="text-4xl">🌲</span>
+                            <span class="text-5xl">🌳</span>
+                            <span class="text-4xl">🌲</span>
+                        </div>
+                        <!-- Dynamic targets spawned here by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. QUIZ TAB: 융합 교과 성취기준 퀴즈 -->
+        <section id="sec-quiz" class="tab-content hidden space-y-6">
+            <div class="glass-card rounded-3xl p-6 shadow-lg border border-forest-200">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
+                    <div>
+                        <span class="bg-purple-100 text-purple-700 font-jua px-3 py-1 rounded-full text-xs font-bold">사회 · 과학 · 수학 · 실과 융합 평가</span>
+                        <h3 class="font-jua text-3xl text-forest-800 mt-1">🧩 숲 수호대 융합 퀴즈 골든벨</h3>
+                        <p class="text-sm text-gray-600">수업 시간에 배운 내용으로 퀴즈를 풀고 숲 지킴이 자격증을 받아보세요!</p>
+                    </div>
+                    <div class="bg-purple-50 px-4 py-2 rounded-2xl border border-purple-200 text-center">
+                        <span class="text-xs text-purple-600 font-bold">퀴즈 진행률</span>
+                        <p id="quizProgressText" class="font-jua text-xl text-purple-800">1 / 5 문제</p>
+                    </div>
+                </div>
+
+                <!-- Quiz Card Container -->
+                <div id="quizContainer" class="bg-white p-6 rounded-2xl border-2 border-forest-200 shadow-md">
+                    <!-- Dynamic Quiz Content Inject by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. REPORT TAB: 나의 탐구 리포트 및 결과 다운로드 -->
+        <section id="sec-report" class="tab-content hidden space-y-6">
+            <div class="glass-card rounded-3xl p-6 shadow-lg border border-forest-200">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-6">
+                    <div>
+                        <span class="bg-yellow-100 text-amberWood font-jua px-3 py-1 rounded-full text-xs font-bold">최종 산출물 포트폴리오</span>
+                        <h3 class="font-jua text-3xl text-forest-800 mt-1">📊 나의 탐구 결과 리포트</h3>
+                        <p class="text-sm text-gray-600">학생의 학습 결과와 퀴즈 점수를 확인하고 파일로 다운로드할 수 있습니다.</p>
+                    </div>
+                    
+                    <div class="flex space-x-2">
+                        <button onclick="downloadReport('csv')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-jua px-4 py-2 rounded-2xl text-sm font-bold shadow btn-bounce flex items-center">
+                            <i class="fa-solid fa-file-csv mr-1.5 text-lg"></i> 결과 다운로드 (.CSV)
+                        </button>
+                        <button onclick="downloadReport('txt')" class="bg-skyBlue hover:bg-sky-500 text-white font-jua px-4 py-2 rounded-2xl text-sm font-bold shadow btn-bounce flex items-center">
+                            <i class="fa-solid fa-file-lines mr-1.5 text-lg"></i> 리포트 저장 (.TXT)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Report Content Details -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Student Info Card -->
+                    <div class="bg-gradient-to-br from-forest-50 to-emerald-100 p-5 rounded-2xl border border-forest-300">
+                        <div class="text-center border-b border-forest-200 pb-4 mb-4">
+                            <div class="text-5xl mb-2">🎓</div>
+                            <h4 id="reportStudentName" class="font-jua text-2xl text-forest-900">로그인이 필요합니다</h4>
+                            <p id="reportStudentDetail" class="text-xs text-forest-700 mt-1">학반 정보 및 아이디 미입력</p>
+                        </div>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 font-bold">🎮 게임 최고 점수</span>
+                                <span id="reportGameScore" class="font-jua text-lg text-forest-700">0점</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 font-bold">🧩 퀴즈 맞힌 개수</span>
+                                <span id="reportQuizScore" class="font-jua text-lg text-purple-700">0 / 5</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 font-bold">🏅 수호대 등급</span>
+                                <span id="reportGradeBadge" class="font-jua text-base text-yellow-600">입문 수호대</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Achievement Summary -->
+                    <div class="md:col-span-2 bg-white p-5 rounded-2xl border border-gray-200 shadow-sm space-y-4">
+                        <h4 class="font-jua text-xl text-forest-800 border-b pb-2 flex items-center">
+                            <i class="fa-solid fa-award text-yellow-500 mr-2"></i> 성취기준 학습 달성 현황
+                        </h4>
+
+                        <div class="space-y-3">
+                            <div class="p-3 rounded-xl bg-orange-50 border border-orange-200 flex items-start space-x-3">
+                                <span class="text-2xl">사회</span>
+                                <div>
+                                    <p class="font-bold text-xs text-orange-800">[6사02-01] 기후변화와 자연재해 심각성 이해</p>
+                                    <p class="text-xs text-gray-600 mt-0.5">계절별 기후 특징과 기후변화로 인한 대형 산불의 위험성을 탐구함.</p>
+                                </div>
+                            </div>
+
+                            <div class="p-3 rounded-xl bg-green-50 border border-green-200 flex items-start space-x-3">
+                                <span class="text-2xl">과학</span>
+                                <div>
+                                    <p class="font-bold text-xs text-green-800">[4과16-02] 기후변화가 우리 환경에 미치는 영향</p>
+                                    <p class="text-xs text-gray-600 mt-0.5">대기 온도 상승과 건조함이 숲에 미치는 영향을 실험 및 데이터로 검증함.</p>
+                                </div>
+                            </div>
+
+                            <div class="p-3 rounded-xl bg-blue-50 border border-blue-200 flex items-start space-x-3">
+                                <span class="text-2xl">실과</span>
+                                <div>
+                                    <p class="font-bold text-xs text-blue-800">[6실05-03] 문제를 해결하는 프로그램 작성 및 공유</p>
+                                    <p class="text-xs text-gray-600 mt-0.5">마이크로비트 온·습도 센서 산불 감지 코딩 프로토타입을 체험하고 시뮬레이션함.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Login Modal Dialog -->
+    <div id="loginModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-4 border-yellow-300 relative transform transition-all">
+            <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="text-5xl mb-2">🐿️</div>
+                <h3 class="font-jua text-2xl text-forest-800">숲 수호대 학생 로그인</h3>
+                <p class="text-xs text-gray-500 mt-1">이름과 학번을 적고 학습을 시작해보세요!</p>
+            </div>
+
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block font-jua text-sm text-forest-800 mb-1">학생 아이디 / 이름</label>
+                    <input type="text" id="studentIdInput" placeholder="예: 김숲속 or student1" required
+                        class="w-full px-4 py-2.5 rounded-xl border-2 border-forest-200 focus:border-forest-500 focus:outline-none text-sm">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-jua text-sm text-forest-800 mb-1">학년 / 반</label>
+                        <input type="text" id="studentGradeInput" placeholder="예: 5학년 2반" required
+                            class="w-full px-4 py-2.5 rounded-xl border-2 border-forest-200 focus:border-forest-500 focus:outline-none text-sm">
+                    </div>
+                    <div>
+                        <label class="block font-jua text-sm text-forest-800 mb-1">모둠 이름</label>
+                        <input type="text" id="studentTeamInput" placeholder="예: Green 1모둠" required
+                            class="w-full px-4 py-2.5 rounded-xl border-2 border-forest-200 focus:border-forest-500 focus:outline-none text-sm">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-yellow-400 hover:bg-yellow-300 text-forest-900 font-jua py-3 rounded-2xl text-lg font-bold shadow btn-bounce mt-2">
+                    🚀 학습 입장하기
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Application Logic Script -->
+    <script>
+        // Global Application State
+        const state = {
+            currentUser: {
+                id: '',
+                grade: '',
+                team: '',
+                isLoggedIn: false
+            },
+            sensor: {
+                temp: 22,
+                humidity: 60
+            },
+            game: {
+                score: 0,
+                highScore: 0,
+                timeLeft: 30,
+                timerId: null,
+                spawnId: null,
+                isPlaying: false
+            },
+            quiz: {
+                currentIndex: 0,
+                score: 0,
+                userAnswers: []
+            }
+        };
+
+        // Integrated Curriculum Quiz Data
+        const quizData = [
+            {
+                question: "[과학/사회] 최근 발생한 대형 산불이 과거보다 훨씬 크고 오래 꺼지지 않는 가장 중요한 원인은 무엇일까요?",
+                options: [
+                    "숲속 동물들의 이동 때문에",
+                    "기후변화로 인한 온도 상승과 대기의 건조함 때문",
+                    "나무의 종류가 너무 다양해져서",
+                    "산에 비가 너무 많이 내려서"
+                ],
+                answer: 1,
+                explanation: "온도 상승과 극심한 건조함 등 기후변화는 산불이 한 번 발생했을 때 대형 산불로 크게 번지게 만드는 주원인입니다!"
+            },
+            {
+                question: "[사회] 우리나라의 계절별 기후 특징 중, 산불이 특히 자주 발생하는 봄철의 특징으로 가장 알맞은 것은?",
+                options: [
+                    "매우 습하고 매일 장마철 비가 내린다.",
+                    "바람이 많이 불고 날씨가 건조하다.",
+                    "기온이 매우 낮고 숲 전체가 눈으로 덮여 있다.",
+                    "태풍이 자주 찾아와 습도가 높다."
+                ],
+                answer: 1,
+                explanation: "봄철은 강수량이 적어 건조하고 강한 바람이 불기 때문에 불씨가 커지기 쉬운 환경이 됩니다."
+            },
+            {
+                question: "[실과/피지컬] 마이크로비트로 산불 위험 감지기를 만들려고 합니다. 경보(ALERT)를 울려야 하는 온·습도 조건은?",
+                options: [
+                    "온도가 낮고 습도가 매우 높을 때",
+                    "온도가 매우 높고 습도가 매우 낮을 때",
+                    "온도 10℃, 습도 80%일 때",
+                    "비가 많이 오는 날씨일 때"
+                ],
+                answer: 1,
+                explanation: "고온 건조한 조건(온도 높음, 습도 낮음)에서 산불 위험성이 급격히 커지므로 이 조건에 맞춰 경보 코드를 작성합니다."
+            },
+            {
+                question: "[수학/데이터] 산림청 공공데이터 그래프를 분석해 보니, 지난 10년간 평균 기온이 오를수록 산불 피해 면적은 어떻게 변했을까요?",
+                options: [
+                    "피해 면적이 점점 줄어들었다.",
+                    "아무런 변화가 없었다.",
+                    "피해 면적이 함께 급격히 늘어났다.",
+                    "산불이 완전히 사라졌다."
+                ],
+                answer: 2,
+                explanation: "데이터 분석 결과 기온 상승과 건조함 증가는 산불 피해 확산 면적과 깊은 상관관계가 있음을 알 수 있습니다."
+            },
+            {
+                question: "[과학/실천] 기후위기로부터 우리 숲을 지키기 위해 우리가 생활 속에서 실천할 수 있는 올바른 자세는?",
+                options: [
+                    "산에 갈 때 라이터 등 화기를 절대 가져가지 않는다.",
+                    "에너지를 많이 써서 지구 온도를 더 높인다.",
+                    "숲속에 쓰레기를 태운다.",
+                    "산불이 나도 관심을 가지지 않는다."
+                ],
+                answer: 0,
+                explanation: "입산 시 인화 물질을 소지하지 않고 탄소 배출을 줄이는 작은 실천이 우리 숲을 지킵니다!"
+            }
+        ];
+
+        window.onload = function() {
+            renderMicrobitGrid();
+            updateSensorSim();
+            renderQuiz();
+        };
+
+        // Navigation Tab Switcher
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('text-yellow-300', 'border-b-4', 'border-yellow-300');
+                btn.classList.add('text-white');
+            });
+
+            document.getElementById(`sec-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            activeBtn.classList.add('text-yellow-300', 'border-b-4', 'border-yellow-300');
+            activeBtn.classList.remove('text-white');
+
+            if (tabName === 'report') {
+                updateReportUI();
+            }
+        }
+
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.remove('hidden');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.add('hidden');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const id = document.getElementById('studentIdInput').value.trim();
+            const grade = document.getElementById('studentGradeInput').value.trim();
+            const team = document.getElementById('studentTeamInput').value.trim();
+
+            if (!id) return;
+
+            state.currentUser = { id, grade, team, isLoggedIn: true };
+            
+            document.getElementById('userNameDisplay').innerText = `${id} (${grade})`;
+            document.getElementById('userBadge').classList.remove('hidden');
+            document.getElementById('loginBtn').classList.add('hidden');
+
+            const welcomeMsg = document.getElementById('welcomeUserSubtext');
+            if (welcomeMsg) {
+                welcomeMsg.innerText = `🎉 반가워요, ${id} 수호대원님! 탐구를 시작해 볼까요?`;
+                welcomeMsg.className = "text-sm text-yellow-300 font-bold mt-3 animate-pulse";
+            }
+
+            closeLoginModal();
+            updateReportUI();
+        }
+
+        function renderMicrobitGrid() {
+            const gridContainer = document.getElementById('ledGrid');
+            gridContainer.innerHTML = '';
+            for (let i = 0; i < 25; i++) {
+                const led = document.createElement('div');
+                led.id = `led-${i}`;
+                led.className = 'w-5 h-5 rounded-sm bg-red-950 transition-colors duration-200 border border-gray-800';
+                gridContainer.appendChild(led);
+            }
+        }
+
+        function updateSensorSim() {
+            const temp = parseInt(document.getElementById('tempInput').value);
+            const humidity = parseInt(document.getElementById('humidityInput').value);
+
+            state.sensor.temp = temp;
+            state.sensor.humidity = humidity;
+
+            document.getElementById('tempValue').innerText = `${temp}℃`;
+            document.getElementById('humidityValue').innerText = `${humidity}%`;
+
+            const riskBadge = document.getElementById('fireRiskDegree');
+            const msg = document.getElementById('microbitMsg');
+            const statusBadge = document.getElementById('mbStatusBadge');
+
+            // High Fire Risk Condition: Temp >= 30 and Humidity <= 30
+            const isHighRisk = (temp >= 30 && humidity <= 30);
+            const isWarning = (temp >= 26 || humidity <= 40);
+
+            // Clear Grid LEDs
+            for (let i = 0; i < 25; i++) {
+                document.getElementById(`led-${i}`).className = 'w-5 h-5 rounded-sm bg-red-950 border border-gray-800';
+            }
+
+            if (isHighRisk) {
+                riskBadge.innerText = '위험! 🚨';
+                riskBadge.className = 'font-jua text-2xl text-red-600 animate-pulse';
+                msg.innerText = '"⚠️ 비상! 고온 건조 산불 경보!"';
+                msg.className = 'font-jua text-red-400 text-lg animate-bounce';
+                statusBadge.innerText = '경보 울림!';
+                statusBadge.className = 'text-xs bg-red-600 px-2 py-0.5 rounded-full text-white font-bold';
+
+                // Display 'X' or 'Skull/Fire Pattern' on 5x5 LED Grid
+                const alertLeds = [0,4, 6,8, 12, 16,18, 20,24];
+                alertLeds.forEach(idx => {
+                    const led = document.getElementById(`led-${idx}`);
+                    if (led) led.className = 'w-5 h-5 rounded-sm bg-red-500 shadow-md shadow-red-500';
+                });
+            } else if (isWarning) {
+                riskBadge.innerText = '주의 ⚠️';
+                riskBadge.className = 'font-jua text-2xl text-orange-500';
+                msg.innerText = '"날씨가 점차 건조해집니다."';
+                msg.className = 'font-jua text-yellow-300 text-lg';
+                statusBadge.innerText = '주의 관찰';
+                statusBadge.className = 'text-xs bg-orange-500 px-2 py-0.5 rounded-full text-white';
+
+                // Display Warning Pattern
+                [2, 7, 12, 22].forEach(idx => {
+                    const led = document.getElementById(`led-${idx}`);
+                    if (led) led.className = 'w-5 h-5 rounded-sm bg-yellow-400 shadow-sm';
+                });
+            } else {
+                riskBadge.innerText = '안전 😊';
+                riskBadge.className = 'font-jua text-2xl text-emerald-600';
+                msg.innerText = '"숲이 상쾌하고 안전해요!"';
+                msg.className = 'font-jua text-emerald-300 text-lg';
+                statusBadge.innerText = '정상 감시 중';
+                statusBadge.className = 'text-xs bg-green-500 px-2 py-0.5 rounded-full text-white';
+
+                // Display Smile Pattern
+                [1,3, 6,8, 15,19, 21,22,23].forEach(idx => {
+                    const led = document.getElementById(`led-${idx}`);
+                    if (led) led.className = 'w-5 h-5 rounded-sm bg-emerald-400 shadow-sm';
+                });
+            }
+        }
+
+        function startGame() {
+            document.getElementById('gameStartOverlay').classList.add('hidden');
+            document.getElementById('gameOverOverlay').classList.add('hidden');
+
+            state.game.score = 0;
+            state.game.timeLeft = 30;
+            state.game.isPlaying = true;
+
+            document.getElementById('gameScore').innerText = '0점';
+            document.getElementById('gameTimer').innerText = '30초';
+
+            // Clear play area
+            const playArea = document.getElementById('gamePlayArea');
+            const trees = playArea.querySelector('div');
+            playArea.innerHTML = '';
+            if (trees) playArea.appendChild(trees);
+
+            // Timer interval
+            clearInterval(state.game.timerId);
+            clearInterval(state.game.spawnId);
+
+            state.game.timerId = setInterval(() => {
+                state.game.timeLeft--;
+                document.getElementById('gameTimer').innerText = `${state.game.timeLeft}초`;
+
+                if (state.game.timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+
+            // Spawn Fire and Trees
+            state.game.spawnId = setInterval(spawnGameItem, 750);
+        }
+
+        function spawnGameItem() {
+            if (!state.game.isPlaying) return;
+
+            const playArea = document.getElementById('gamePlayArea');
+            const item = document.createElement('div');
+
+            const isFire = Math.random() > 0.35; // 65% fire, 35% water/tree
+            const emoji = isFire ? '🔥' : '🌱';
+
+            item.innerText = emoji;
+            item.className = `absolute text-4xl sm:text-5xl cursor-pointer select-none transition-transform hover:scale-125 ${isFire ? 'fire-anim' : ''}`;
+            
+            // Random Positioning within play area boundaries
+            const x = Math.random() * 82 + 5; 
+            const y = Math.random() * 60 + 10;
+            item.style.left = `${x}%`;
+            item.style.top = `${y}%`;
+
+            item.onclick = function() {
+                if (!state.game.isPlaying) return;
+
+                if (isFire) {
+                    state.game.score += 10;
+                    createPoofEffect(playArea, x, y, '💧 불씨 진화!');
+                } else {
+                    state.game.score += 15;
+                    createPoofEffect(playArea, x, y, '🌲 나무 가꾸기!');
+                }
+
+                document.getElementById('gameScore').innerText = `${state.game.score}점`;
+                item.remove();
+            };
+
+            playArea.appendChild(item);
+
+            // Remove item automatically after 1.8 seconds
+            setTimeout(() => {
+                if (item.parentNode) item.remove();
+            }, 1800);
+        }
+
+        function createPoofEffect(parent, x, y, text) {
+            const pop = document.createElement('div');
+            pop.innerText = text;
+            pop.className = 'absolute font-jua text-xs sm:text-sm text-yellow-300 bg-forest-900/80 px-2 py-0.5 rounded-full pointer-events-none transform -translate-y-4 transition-all duration-500';
+            pop.style.left = `${x}%`;
+            pop.style.top = `${y}%`;
+            parent.appendChild(pop);
+            setTimeout(() => pop.remove(), 600);
+        }
+
+        function endGame() {
+            state.game.isPlaying = false;
+            clearInterval(state.game.timerId);
+            clearInterval(state.game.spawnId);
+
+            if (state.game.score > state.game.highScore) {
+                state.game.highScore = state.game.score;
+            }
+
+            document.getElementById('finalGameScore').innerText = state.game.score;
+            const evalText = document.getElementById('gameEvalText');
+
+            if (state.game.score >= 150) {
+                evalText.innerText = '🎖️ 대단해요! 완벽한 명예 숲 수호대장입니다!';
+            } else if (state.game.score >= 80) {
+                evalText.innerText = '👏 훌륭해요! 숲의 평화를 지켜냈습니다!';
+            } else {
+                evalText.innerText = '🌱 힘내세요! 한 번 더 도전해 볼까요?';
+            }
+
+            document.getElementById('gameOverOverlay').classList.remove('hidden');
+            updateReportUI();
+        }
+
+        function renderQuiz() {
+            const container = document.getElementById('quizContainer');
+            const q = quizData[state.quiz.currentIndex];
+
+            document.getElementById('quizProgressText').innerText = `${state.quiz.currentIndex + 1} / ${quizData.length} 문제`;
+
+            let optionsHTML = '';
+            q.options.forEach((opt, idx) => {
+                optionsHTML += `
+                    <button onclick="selectQuizOption(${idx})" class="w-full text-left p-3.5 rounded-xl border-2 border-forest-100 hover:border-forest-400 hover:bg-forest-50 font-jua text-base sm:text-lg text-gray-700 transition flex items-center space-x-3">
+                        <span class="bg-forest-200 text-forest-800 w-7 h-7 rounded-full flex items-center justify-center font-bold text-sm shrink-0">${idx + 1}</span>
+                        <span>${opt}</span>
+                    </button>
+                `;
+            });
+
+            container.innerHTML = `
+                <div class="space-y-4">
+                    <span class="bg-forest-100 text-forest-800 font-jua text-xs px-3 py-1 rounded-full font-bold">문제 ${state.quiz.currentIndex + 1}</span>
+                    <h4 class="font-jua text-xl sm:text-2xl text-gray-800 leading-snug">${q.question}</h4>
+                    <div class="space-y-2.5 pt-2">
+                        ${optionsHTML}
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectQuizOption(selectedIdx) {
+            const q = quizData[state.quiz.currentIndex];
+            const isCorrect = (selectedIdx === q.answer);
+
+            if (isCorrect) {
+                state.quiz.score++;
+            }
+
+            state.quiz.userAnswers.push({
+                question: q.question,
+                userChoice: q.options[selectedIdx],
+                correctChoice: q.options[q.answer],
+                isCorrect: isCorrect
+            });
+
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = `
+                <div class="text-center py-4 space-y-4">
+                    <div class="text-6xl">${isCorrect ? '⭕' : '❌'}</div>
+                    <h4 class="font-jua text-2xl ${isCorrect ? 'text-forest-600' : 'text-red-500'}">
+                        ${isCorrect ? '정답입니다! 참 잘했어요 👏' : '아쉬워요! 다시 꼭 기억해봐요 💡'}
+                    </h4>
+                    <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-200 text-sm text-yellow-900 max-w-lg mx-auto text-left">
+                        <p class="font-bold text-yellow-800 mb-1">💡 학습 해설</p>
+                        ${q.explanation}
+                    </div>
+                    <button onclick="nextQuizQuestion()" class="bg-yellow-400 hover:bg-yellow-300 text-forest-900 font-jua px-6 py-2.5 rounded-2xl text-lg font-bold shadow btn-bounce mt-2">
+                        ${state.quiz.currentIndex < quizData.length - 1 ? '다음 문제 풀기 ➡️' : '결과 리포트 보기 📊'}
+                    </button>
+                </div>
+            `;
+        }
+
+        function nextQuizQuestion() {
+            if (state.quiz.currentIndex < quizData.length - 1) {
+                state.quiz.currentIndex++;
+                renderQuiz();
+            } else {
+                switchTab('report');
+            }
+        }
+
+        function updateReportUI() {
+            const user = state.currentUser;
+            const nameElem = document.getElementById('reportStudentName');
+            const detailElem = document.getElementById('reportStudentDetail');
+
+            if (user.isLoggedIn) {
+                nameElem.innerText = `${user.id} 학생`;
+                detailElem.innerText = `${user.grade} | ${user.team}`;
+            } else {
+                nameElem.innerText = `손님 (로그인 필요)`;
+                detailElem.innerText = `상단 로그인 버튼을 눌러 정보를 입력하세요.`;
+            }
+
+            document.getElementById('reportGameScore').innerText = `${state.game.highScore}점`;
+            document.getElementById('reportQuizScore').innerText = `${state.quiz.score} / ${quizData.length}`;
+
+            // Grade logic
+            const totalScore = state.game.highScore + (state.quiz.score * 20);
+            const badge = document.getElementById('reportGradeBadge');
+
+            if (totalScore >= 200) {
+                badge.innerText = '🌟 수호대장 영웅';
+                badge.className = 'font-jua text-base text-purple-600 font-bold';
+            } else if (totalScore >= 100) {
+                badge.innerText = '🌲 정식 숲 수호대';
+                badge.className = 'font-jua text-base text-forest-600 font-bold';
+            } else {
+                badge.innerText = '🌱 숲 지킴이 입문';
+                badge.className = 'font-jua text-base text-yellow-600 font-bold';
+            }
+        }
+
+        // Export & Download Student Report File
+        function downloadReport(format) {
+            const user = state.currentUser.isLoggedIn ? state.currentUser : { id: '미등록', grade: '미등록', team: '미등록' };
+            const timestamp = new Date().toLocaleString('ko-KR');
+
+            if (format === 'csv') {
+                let csvContent = "\uFEFF"; // UTF-8 BOM
+                csvContent += "학생아이디,학년반,모둠,게임점수,퀴즈점수,총문항수,제출시간\n";
+                csvContent += `"${user.id}","${user.grade}","${user.team}",${state.game.highScore},${state.quiz.score},${quizData.length},"${timestamp}"\n\n`;
+                
+                csvContent += "문제번호,문제,학생제출답안,정답,정답여부\n";
+                state.quiz.userAnswers.forEach((ans, idx) => {
+                    csvContent += `${idx + 1},"${ans.question.replace(/"/g, '""')}","${ans.userChoice.replace(/"/g, '""')}","${ans.correctChoice.replace(/"/g, '""')}","${ans.isCorrect ? '정답' : '오답'}"\n`;
+                });
+
+                blobDownload(csvContent, `숲수호대_학습결과_${user.id}.csv`, 'text/csv;charset=utf-8;');
+            } else {
+                let txtContent = `==========================================\n`;
+                txtContent += ` 🌲 기후변화 숲 수호대 탐구 리포트 🌲\n`;
+                txtContent += `==========================================\n\n`;
+                txtContent += `■ 학생 아이디: ${user.id}\n`;
+                txtContent += `■ 학년 / 반 : ${user.grade}\n`;
+                txtContent += `■ 소속 모둠  : ${user.team}\n`;
+                txtContent += `■ 제출 시간  : ${timestamp}\n\n`;
+                txtContent += `------------------------------------------\n`;
+                txtContent += ` [학습 성과 요약]\n`;
+                txtContent += ` - 🎮 숲 지킴이 게임 최고점수: ${state.game.highScore}점\n`;
+                txtContent += ` - 🧩 융합 퀴즈 맞힌 개수: ${state.quiz.score} / ${quizData.length} 문제\n`;
+                txtContent += `------------------------------------------\n\n`;
+                txtContent += ` [퀴즈 상세 제출 답안]\n`;
+
+                state.quiz.userAnswers.forEach((ans, idx) => {
+                    txtContent += `${idx + 1}. ${ans.question}\n`;
+                    txtContent += `   - 제출 답안: ${ans.userChoice}\n`;
+                    txtContent += `   - 실제 정답: ${ans.correctChoice}\n`;
+                    txtContent += `   - 채점 결과: ${ans.isCorrect ? 'O (정답)' : 'X (오답)'}\n\n`;
+                });
+
+                blobDownload(txtContent, `숲수호대_학습리포트_${user.id}.txt`, 'text/plain;charset=utf-8;');
+            }
+        }
+
+        function blobDownload(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
